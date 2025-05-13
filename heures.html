@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matrix Code Screen</title>
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      color: white;
+      overflow: hidden;
+    }
+
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+
+    .content {
+      text-align: center;
+      margin-top: 100px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      font-weight: bold;
+    }
+
+    p {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+    }
+
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 60px);
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .keypad button {
+      padding: 15px;
+      font-size: 1.2em;
+      background-color: #111;
+      color: #00f;
+      border: 2px solid #00f;
+      cursor: pointer;
+    }
+
+    #display {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    #message {
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<canvas id="matrix"></canvas>
+<div class="content">
+  <h1>A better way to deliver</h1>
+  <p>Insérer le code secret</p>
+  <div id="display"></div>
+  <div class="keypad">
+    <button onclick="enterDigit('0')">0</button>
+    <button onclick="enterDigit('1')">1</button>
+    <button onclick="enterDigit('2')">2</button>
+    <button onclick="enterDigit('3')">3</button>
+    <button onclick="enterDigit('4')">4</button>
+    <button onclick="enterDigit('5')">5</button>
+    <button onclick="enterDigit('6')">6</button>
+    <button onclick="enterDigit('7')">7</button>
+    <button onclick="enterDigit('8')">8</button>
+    <button onclick="enterDigit('9')">9</button>
+  </div>
+  <div id="message"></div>
+</div>
+
+<script>
+  const canvas = document.getElementById("matrix");
+  const ctx = canvas.getContext("2d");
+
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+
+  const letters = Array(256).join("1").split("");
+  const fontSize = 14;
+  const columns = canvas.width / fontSize;
+  const drops = new Array(Math.floor(columns)).fill(1);
+
+  function draw() {
+    ctx.fillStyle = "rgba(0, 0, 50, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#00f";
+    ctx.font = fontSize + "px monospace";
+    for (let i = 0; i < drops.length; i++) {
+      const text = String.fromCharCode(0x30A0 + Math.random() * 96);
+      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+  setInterval(draw, 35);
+
+  let code = "";
+  const display = document.getElementById("display");
+  const message = document.getElementById("message");
+
+  function enterDigit(digit) {
+    if (code.length < 3) {
+      code += digit;
+      display.innerText = code;
+    }
+    if (code.length === 3) {
+      if (code === "506") {
+        message.style.color = "lime";
+        message.innerText = "BONNE REPONSE";
+      } else {
+        message.style.color = "red";
+        message.innerText = "ERREUR";
+      }
+      setTimeout(() => {
+        code = "";
+        display.innerText = "";
+        message.innerText = "";
+      }, 2000);
+    }
+  }
+</script>
+</body>
+</html>
